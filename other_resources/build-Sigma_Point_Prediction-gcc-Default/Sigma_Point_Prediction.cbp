@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="Sigma_Point_Prediction" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Sigma_Point_Prediction">
+         <Option output="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Sigma_Point_Prediction" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.7" />
+            <Add directory="/usr/include/c++/4.7/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/4.7/." />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include-fixed" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 Sigma_Point_Prediction" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Sigma_Point_Prediction/fast">
+         <Option output="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Sigma_Point_Prediction" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.7" />
+            <Add directory="/usr/include/c++/4.7/backward" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/4.7/." />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include-fixed" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 Sigma_Point_Prediction/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/build-Sigma_Point_Prediction-gcc-Default/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/Sigma_Point_Prediction/main.cpp">
+      </Unit>
+      <Unit filename="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/Sigma_Point_Prediction/ukf.cpp">
+      </Unit>
+      <Unit filename="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/Sigma_Point_Prediction/ukf.h">
+      </Unit>
+      <Unit filename="/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/other_resources/Sigma_Point_Prediction/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>
