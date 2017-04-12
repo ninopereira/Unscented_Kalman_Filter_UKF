@@ -34,6 +34,7 @@ public:
 
   ///* time when the state is true, in us
   long long time_us_;
+  long long  previous_timestamp_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -101,13 +102,13 @@ public:
    * Updates the state and the state covariance matrix using a laser measurement
    * @param meas_package The measurement at k+1
    */
-  void UpdateLidar(MeasurementPackage meas_package);
+  void UpdateLidar(const VectorXd &z);
 
   /**
    * Updates the state and the state covariance matrix using a radar measurement
    * @param meas_package The measurement at k+1
    */
-  void UpdateRadar(MeasurementPackage meas_package);
+  void UpdateRadar(const VectorXd &z);
 
    /**
    * Predicts the sigma points by passing generated sigma points throught the non-linear process function
@@ -115,20 +116,37 @@ public:
    * @param Xsig_in input matrix containing all generated sigma points
    * @param delta_t elapsed time between the current and previous iteration
    */
-  void SigmaPointPrediction(MatrixXd* Xsig_out, MatrixXd* Xsig_in, double delta_t);
+  void SigmaPointPrediction(MatrixXd& Xsig_out, MatrixXd& Xsig_in, double delta_t);
 
    /**
    * Generates the sigma points
    * @param Xsig_out output matrix containing generated sigma points
    */
-  void GenerateSigmaPoints(MatrixXd* Xsig_out);
+  void GenerateSigmaPoints(MatrixXd& Xsig_out);
 
    /**
    * Predicts mean and covariance of the state
    * @param x_out output mean state
    * @param P_out output covariance matrix
    */
-  void PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out);
+  void PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out);
+
+  /**
+   * Computes the predicted measurement for RADAR measurement type
+   * @param Zsig_out (output) predicted sigma points matrix
+   * @param z_out (output) mean value of predicted measurement
+   * @param S (output) measurement covariance matrix
+   */
+  void PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd& S_out);
+
+   /**
+   * Updates the state (x_) and covariance matrix (P_)
+   * @param Zsig (input) predicted sigma points matrix
+   * @param z_pred (input) mean value of predicted measurement
+   * @param S (input) measurement covariance matrix
+   * @param n_z (input) measurement state dimension
+   */
+  void UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z);
 
 };
 
