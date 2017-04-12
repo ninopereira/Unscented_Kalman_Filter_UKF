@@ -108,6 +108,28 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+   /**
+   * Predicts the sigma points by passing generated sigma points throught the non-linear process function
+   * @param Xsig_out output matrix containing all predicted sigma points
+   * @param Xsig_in input matrix containing all generated sigma points
+   * @param delta_t elapsed time between the current and previous iteration
+   */
+  void SigmaPointPrediction(MatrixXd* Xsig_out, MatrixXd* Xsig_in, double delta_t);
+
+   /**
+   * Generates the sigma points
+   * @param Xsig_out output matrix containing generated sigma points
+   */
+  void GenerateSigmaPoints(MatrixXd* Xsig_out);
+
+   /**
+   * Predicts mean and covariance of the state
+   * @param x_out output mean state
+   * @param P_out output covariance matrix
+   */
+  void PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out);
+
 };
 
 #endif /* UKF_H */
