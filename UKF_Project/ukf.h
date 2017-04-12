@@ -106,7 +106,7 @@ public:
 
   /**
    * Updates the state and the state covariance matrix using a radar measurement
-   * @param meas_package The measurement at k+1
+   * @param z The RADAR measurement raw data at k+1
    */
   void UpdateRadar(const VectorXd &z);
 
@@ -116,7 +116,7 @@ public:
    * @param Xsig_in input matrix containing all generated sigma points
    * @param delta_t elapsed time between the current and previous iteration
    */
-  void SigmaPointPrediction(MatrixXd& Xsig_out, MatrixXd& Xsig_in, double delta_t);
+  void SigmaPointPrediction(MatrixXd& Xsig_in, double delta_t);
 
    /**
    * Generates the sigma points
@@ -141,12 +141,13 @@ public:
 
    /**
    * Updates the state (x_) and covariance matrix (P_)
+   * @param z The RADAR measurement raw data at k+1
    * @param Zsig (input) predicted sigma points matrix
    * @param z_pred (input) mean value of predicted measurement
    * @param S (input) measurement covariance matrix
    * @param n_z (input) measurement state dimension
    */
-  void UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z);
+  void UpdateState(const VectorXd& z, MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z);
 
 };
 

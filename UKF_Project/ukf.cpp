@@ -73,24 +73,24 @@ UKF::UKF() {
   std_radrd_ = 0.3;
 
   ///* predicted sigma points matrix
-  Xsig_pred_ = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+  Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
 
   ///* Weights of sigma points
-  weights_ = VectorXd();
+  weights_ = VectorXd(2*n_aug_+1);
 
   ///* the current NIS for radar
   NIS_radar_ = 0;
 
   ///* the current NIS for laser
   NIS_laser_ = 0;
-
-
 }
 
 UKF::~UKF() {}
 
 /**
- * @param {MeasurementPackage} meas_package The latest measurement data of
+ * @param {MeasurementPackage} meas_package The
+
+ latest measurement data of
  * either radar or laser.
  */
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
@@ -105,8 +105,9 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     cout << "UKF: " << endl;
     double px = 0;
     double py = 0;
-    double vx = 0;
-    double vy = 0;
+    double v = 0;
+    double phi = 0;
+    double phi_dot = 0;
 
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
       /**
@@ -117,19 +118,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 //      double ro_dot = measurement_pack.raw_measurements_(2);
 
       px = ro * cos(phi);
-      py = ro * sin(phi);
-
-      vx = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
-      vy = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
+      py = ro * sin(phi);              
     }
     else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
       px = meas_package.raw_measurements_(0);
       py = meas_package.raw_measurements_(1);
-      vx = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
-      vy = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
     }
 
-    x_ << px, py, vx, vy;
+    x_ << px, py, v, phi, phi_dot;
 
     previous_timestamp_ = meas_package.timestamp_ ;
     // done initializing, no need to predict or update
@@ -155,7 +151,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   // Update the state and covariance matrices.
   if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
-    UpdateRadar(meas_package.raw_measurements_);
+      //create example vector for incoming radar measurement
+  //    VectorXd z = VectorXd(n_z);
+  //    z = Zsig.col(0);
+          //rho in m
+          //phi in rad
+          //rho_dot in m/s
+      UpdateRadar(meas_package.raw_measurements_);
+
   } else {
     // Laser updates
     UpdateLidar(meas_package.raw_measurements_);
@@ -177,11 +180,12 @@ void UKF::Prediction(double delta_t) {
 //        3. Predict Mean and Covariance (see Predicted_Mean_Cov Project)
 
   //1. Generate Sigma Points
-  MatrixXd Xsig_in = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+  MatrixXd Xsig_in = MatrixXd(n_x_, 2 * n_x_ + 1);
   GenerateSigmaPoints(Xsig_in); // Generate Sigma Points
 
+  MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
   // 2. Predict Sigma Points
-  SigmaPointPrediction(Xsig_pred_, Xsig_in, delta_t);
+  SigmaPointPrediction(Xsig_aug, delta_t);
 
   // 3. Predict Mean and Covariance
   PredictMeanAndCovariance(x_, P_);
@@ -252,7 +256,7 @@ void UKF::UpdateRadar(const VectorXd &z) {
   PredictRadarMeasurement(Zsig_out, z_out, S_out);
 
   // Update state and covariance matrix
-  UpdateState(Zsig_out, z_out, S_out, n_z);
+  UpdateState(z, Zsig_out, z_out, S_out, n_z);
 }
 
 
@@ -270,11 +274,8 @@ void UKF::GenerateSigmaPoints(MatrixXd& Xsig_out) {
   //set sigma points as columns of matrix Xsig
 
   // first sigma point is x
-  Xsig.col(0) << x_;
+  Xsig.col(0) = x_;
   double sqlpn =  sqrt(lambda_+n_x_);// sqrt(lambda+nx)
-
-  //set first column of sigma point matrix
-  Xsig.col(0)  = x_;
 
   //set remaining sigma points
   for (int i = 0; i < n_x_; i++)
@@ -287,10 +288,7 @@ void UKF::GenerateSigmaPoints(MatrixXd& Xsig_out) {
   Xsig_out = Xsig;
 }
 
-void UKF::SigmaPointPrediction(MatrixXd& Xsig_out, MatrixXd& Xsig_in, double delta_t) {
-
-  //create matrix with predicted sigma points as columns
-  MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug_ + 1);
+void UKF::SigmaPointPrediction(MatrixXd& Xsig_in, double delta_t) {
 
   VectorXd x_k = VectorXd(n_x_);
   VectorXd F = VectorXd(n_x_);
@@ -331,15 +329,11 @@ void UKF::SigmaPointPrediction(MatrixXd& Xsig_out, MatrixXd& Xsig_in, double del
 
 
       //write predicted sigma points into right column
-      Xsig_pred.col(i) = x_k + F + noise;
+      Xsig_pred_.col(i) = x_k + F + noise;
   }
 
   //print result
-  std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
-
-  //write result
-  Xsig_out = Xsig_pred;
-
+//  std::cout << "Xsig_pred = " << std::endl << Xsig_pred_ << std::endl;
 }
 
 void UKF::PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out){
@@ -376,10 +370,10 @@ void UKF::PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out){
     }
 
   //print result
-  std::cout << "Predicted state" << std::endl;
-  std::cout << x << std::endl;
-  std::cout << "Predicted covariance matrix" << std::endl;
-  std::cout << P << std::endl;
+//  std::cout << "Predicted state" << std::endl;
+//  std::cout << x << std::endl;
+//  std::cout << "Predicted covariance matrix" << std::endl;
+//  std::cout << P << std::endl;
 
   //write result
   x_out = x;
@@ -457,8 +451,8 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd&
   S += R;
 
   //print result
-  std::cout << "z_pred: " << std::endl << z_pred << std::endl;
-  std::cout << "S: " << std::endl << S << std::endl;
+//  std::cout << "z_pred: " << std::endl << z_pred << std::endl;
+//  std::cout << "S: " << std::endl << S << std::endl;
 
   //write result
   Zsig_out = z_meas; // sigma points in measurement space (we need this for the update step)
@@ -467,16 +461,9 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd&
 }
 
 
-void UKF::UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z){
+void UKF::UpdateState(const VectorXd& z, MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z){
 
   // RADAR ONLY
-
-  //create example vector for incoming radar measurement
-  VectorXd z = VectorXd(n_z);
-  z << Zsig.col(0);
-      //rho in m
-      //phi in rad
-      //rho_dot in m/s
 
   //create matrix for cross correlation Tc
   MatrixXd Tc = MatrixXd(n_x_, n_z);
