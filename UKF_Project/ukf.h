@@ -129,7 +129,7 @@ public:
    * @param x_out output mean state
    * @param P_out output covariance matrix
    */
-  void PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out);
+  void PredictMeanAndCovariance();
 
   /**
    * Computes the predicted measurement for RADAR measurement type
