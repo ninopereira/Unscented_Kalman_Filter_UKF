@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-04-10T22:37:17
+# Project created by QtCreator 2017-04-18T16:17:02
 #
 #-------------------------------------------------
 
@@ -15,12 +15,13 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp \
-    tools.cpp \
-    ukf.cpp
+SOURCES += \
+    ../src/main.cpp \
+    ../src/tools.cpp \
+    ../src/ukf.cpp
 
 HEADERS += \
-    ground_truth_package.h \
-    measurement_package.h \
-    tools.h \
-    ukf.h
+    ../src/ground_truth_package.h \
+    ../src/measurement_package.h \
+    ../src/tools.h \
+    ../src/ukf.h
