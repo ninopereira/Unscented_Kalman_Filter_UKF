@@ -194,10 +194,13 @@ void UKF::Prediction(double delta_t) {
 //        3. Predict Mean and Covariance (see Predicted_Mean_Cov Project)
 
   //1. Generate Sigma Points
-  MatrixXd Xsig_in = MatrixXd(n_x_, 2 * n_x_ + 1);
-  GenerateSigmaPoints(Xsig_in); // Generate Sigma Points
+//  MatrixXd Xsig_in = MatrixXd(n_x_, 2 * n_x_ + 1);
+//  GenerateSigmaPoints(Xsig_in); // Generate Sigma Points
 
+  //create sigma point matrix
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+  AugmentedSigmaPoints(Xsig_aug);
+
   // 2. Predict Sigma Points
   SigmaPointPrediction(Xsig_aug, delta_t);
 
@@ -302,6 +305,58 @@ void UKF::GenerateSigmaPoints(MatrixXd& Xsig_out) {
   Xsig_out = Xsig;
 }
 
+void UKF::AugmentedSigmaPoints(MatrixXd& Xsig_aug) {
+
+  //define spreading parameter
+  double lambda = 3 - n_aug_;
+
+  //create augmented mean vector
+  VectorXd x_aug = VectorXd(n_aug_);
+
+  //create augmented state covariance
+  MatrixXd P_aug = MatrixXd(n_aug_, n_aug_);
+
+/*******************************************************************************
+ * Student part begin
+ ******************************************************************************/
+
+  //create augmented mean state
+  x_aug.head(n_x_) << x_; // don't need to set last two elemts because they are zero already
+  x_aug(5) = 0;
+  x_aug(6) = 0;
+
+  //create augmented covariance matrix
+  P_aug.topLeftCorner(n_x_,n_x_) = P_;
+
+  MatrixXd Q = MatrixXd(2,2);
+
+   Q <<  pow(std_a_,2), 0,
+         0, pow(std_yawdd_,2);
+
+   P_aug.bottomRightCorner(2,2) << Q;
+//  P_aug(5,5) = std_a*std_a;
+//  P_aug(6,6) = std_yawdd * std_yawdd;
+//  std::cout << P_aug << std::endl;
+
+  //create square root matrix
+  MatrixXd A = P_aug.llt().matrixL();
+
+  //create augmented sigma points
+  Xsig_aug.col(0) << x_aug;
+
+  double sqlpn =  sqrt(lambda+n_aug_);// sqrt(lambda+nx)
+
+  //set remaining sigma points
+  for (int i = 0; i < n_aug_; i++)
+  {
+    Xsig_aug.col(i+1)     = x_aug + sqlpn * A.col(i);  // 2nd sigma point through nk+1
+    Xsig_aug.col(i+1+n_aug_) = x_aug - sqlpn * A.col(i);  // nk+2 sigma point through 2nk+1
+  }
+
+  //print result
+//  std::cout << "Xsig_aug = " << std::endl << Xsig_aug << std::endl;
+}
+
 void UKF::SigmaPointPrediction(MatrixXd& Xsig_in, double delta_t) {
 
   VectorXd x_k = VectorXd(n_x_);
@@ -352,12 +407,6 @@ void UKF::SigmaPointPrediction(MatrixXd& Xsig_in, double delta_t) {
 
 void UKF::PredictMeanAndCovariance(){
 
-  //create vector for predicted state
-  VectorXd x = VectorXd(n_x_);
-
-  //create covariance matrix for prediction
-  MatrixXd P = MatrixXd(n_x_, n_x_);
-
   // set lambda (spreading parameter)
   lambda_ = 3 - n_aug_;
 
@@ -377,7 +426,7 @@ void UKF::PredictMeanAndCovariance(){
     {
         // state difference
         VectorXd x_diff = Xsig_pred_.col(i) - x_;
-        std::cout << x_diff << std::endl;
+//        std::cout << x_diff << std::endl;
         //angle normalization
 //        while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI; // it gets stuck in here
 //        while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
@@ -388,9 +437,9 @@ void UKF::PredictMeanAndCovariance(){
 
   //print result
   std::cout << "Predicted state" << std::endl;
-  std::cout << x << std::endl;
-  std::cout << "Predicted covariance matrix" << std::endl;
-  std::cout << P << std::endl;
+  std::cout << x_ << std::endl;
+//  std::cout << "Predicted covariance matrix" << std::endl;
+//  std::cout << P_ << std::endl;
 }
 
 void UKF::PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd& S_out) {

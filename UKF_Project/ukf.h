@@ -125,6 +125,12 @@ public:
   void GenerateSigmaPoints(MatrixXd& Xsig_out);
 
    /**
+   * Generates augmented sigma points
+   * @param Xsig_aug output matrix containing generated sigma points
+   */
+  void AugmentedSigmaPoints(MatrixXd& Xsig_aug);
+
+   /**
    * Predicts mean and covariance of the state
    * @param x_out output mean state
    * @param P_out output covariance matrix
