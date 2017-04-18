@@ -105,8 +105,9 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     cout << "UKF: " << endl;
     double px = 0;
     double py = 0;
-    double vx = 0;
-    double vy = 0;
+    double v = 0;
+    double yaw = 0;
+    double yawd = 0;
 
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
       /**
@@ -114,23 +115,32 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       */
       double ro = meas_package.raw_measurements_(0);
       double phi = meas_package.raw_measurements_(1);
-//      double ro_dot = measurement_pack.raw_measurements_(2);
+      double ro_dot = meas_package.raw_measurements_(2);
 
       px = ro * cos(phi);
       py = ro * sin(phi);
+      v = ro_dot;
+      yaw = phi;
+      yawd = 0;
 
-      vx = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
-      vy = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
     }
     else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
       px = meas_package.raw_measurements_(0);
       py = meas_package.raw_measurements_(1);
-      vx = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
-      vy = 0.0; // vx can be initialised as zero; KF will make the correct prediction over time
+      v = 0.0;
+      yaw = (px == 0 ? 0 : atan2(py, px));
+      yawd = 0;
+
     }
 
-    x_ << px, py, vx, vy;
+    x_ << px, py, v, yaw, yawd;
 
+    // High confidence in px, py and yaw
+    P_ <<   0.1, 0, 0, 0, 0,
+            0, 0.1, 0, 0, 0,
+            0, 0, 0.1, 0, 0,
+            0, 0, 0, 1, 0,
+            0, 0, 0, 0, 1;
     previous_timestamp_ = meas_package.timestamp_ ;
     // done initializing, no need to predict or update
     is_initialized_ = true;
