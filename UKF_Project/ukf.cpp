@@ -73,24 +73,24 @@ UKF::UKF() {
   std_radrd_ = 0.3;
 
   ///* predicted sigma points matrix
-  Xsig_pred_ = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+  Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
 
   ///* Weights of sigma points
-  weights_ = VectorXd();
+  weights_ = VectorXd(2*n_aug_+1);
 
   ///* the current NIS for radar
   NIS_radar_ = 0;
 
   ///* the current NIS for laser
   NIS_laser_ = 0;
-
-
 }
 
 UKF::~UKF() {}
 
 /**
- * @param {MeasurementPackage} meas_package The latest measurement data of
+ * @param {MeasurementPackage} meas_package The
+
+ latest measurement data of
  * either radar or laser.
  */
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
@@ -165,7 +165,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   // Update the state and covariance matrices.
   if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
-    UpdateRadar(meas_package.raw_measurements_);
+      //create example vector for incoming radar measurement
+  //    VectorXd z = VectorXd(n_z);
+  //    z = Zsig.col(0);
+          //rho in m
+          //phi in rad
+          //rho_dot in m/s
+//      UpdateRadar(meas_package.raw_measurements_);
+
   } else {
     // Laser updates
     UpdateLidar(meas_package.raw_measurements_);
@@ -187,14 +194,15 @@ void UKF::Prediction(double delta_t) {
 //        3. Predict Mean and Covariance (see Predicted_Mean_Cov Project)
 
   //1. Generate Sigma Points
-  MatrixXd Xsig_in = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+  MatrixXd Xsig_in = MatrixXd(n_x_, 2 * n_x_ + 1);
   GenerateSigmaPoints(Xsig_in); // Generate Sigma Points
 
+  MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
   // 2. Predict Sigma Points
-  SigmaPointPrediction(Xsig_pred_, Xsig_in, delta_t);
+  SigmaPointPrediction(Xsig_aug, delta_t);
 
   // 3. Predict Mean and Covariance
-  PredictMeanAndCovariance(x_, P_);
+  PredictMeanAndCovariance();
 }
 
 /**
@@ -262,7 +270,7 @@ void UKF::UpdateRadar(const VectorXd &z) {
   PredictRadarMeasurement(Zsig_out, z_out, S_out);
 
   // Update state and covariance matrix
-  UpdateState(Zsig_out, z_out, S_out, n_z);
+  UpdateState(z, Zsig_out, z_out, S_out, n_z);
 }
 
 
@@ -280,11 +288,8 @@ void UKF::GenerateSigmaPoints(MatrixXd& Xsig_out) {
   //set sigma points as columns of matrix Xsig
 
   // first sigma point is x
-  Xsig.col(0) << x_;
+  Xsig.col(0) = x_;
   double sqlpn =  sqrt(lambda_+n_x_);// sqrt(lambda+nx)
-
-  //set first column of sigma point matrix
-  Xsig.col(0)  = x_;
 
   //set remaining sigma points
   for (int i = 0; i < n_x_; i++)
@@ -297,10 +302,7 @@ void UKF::GenerateSigmaPoints(MatrixXd& Xsig_out) {
   Xsig_out = Xsig;
 }
 
-void UKF::SigmaPointPrediction(MatrixXd& Xsig_out, MatrixXd& Xsig_in, double delta_t) {
-
-  //create matrix with predicted sigma points as columns
-  MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug_ + 1);
+void UKF::SigmaPointPrediction(MatrixXd& Xsig_in, double delta_t) {
 
   VectorXd x_k = VectorXd(n_x_);
   VectorXd F = VectorXd(n_x_);
@@ -341,18 +343,14 @@ void UKF::SigmaPointPrediction(MatrixXd& Xsig_out, MatrixXd& Xsig_in, double del
 
 
       //write predicted sigma points into right column
-      Xsig_pred.col(i) = x_k + F + noise;
+      Xsig_pred_.col(i) = x_k + F + noise;
   }
 
   //print result
-  std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
-
-  //write result
-  Xsig_out = Xsig_pred;
-
+//  std::cout << "Xsig_pred = " << std::endl << Xsig_pred_ << std::endl;
 }
 
-void UKF::PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out){
+void UKF::PredictMeanAndCovariance(){
 
   //create vector for predicted state
   VectorXd x = VectorXd(n_x_);
@@ -364,25 +362,28 @@ void UKF::PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out){
   lambda_ = 3 - n_aug_;
 
     weights_(0) = lambda_ / (lambda_ + n_aug_);
-    x = weights_(0)*Xsig_pred_.col(0);
+    x_ = weights_(0)*Xsig_pred_.col(0);
     for (int i =1; i< 2*n_aug_+1; i++)
     {
       //set weights
       weights_(i) = 0.5 / (lambda_ + n_aug_);
 
       //predict state mean
-      x += weights_(i) * Xsig_pred_.col(i);
+      x_ += weights_(i) * Xsig_pred_.col(i);
     }
 
   //predict state covariance matrix
     for (int i =0; i< 2*n_aug_+1; i++)
     {
         // state difference
-        VectorXd x_diff = Xsig_pred_.col(i) - x;
+        VectorXd x_diff = Xsig_pred_.col(i) - x_;
+        std::cout << x_diff << std::endl;
         //angle normalization
-        while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
-        while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
-        P += weights_(i) * x_diff * x_diff.transpose();
+//        while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI; // it gets stuck in here
+//        while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
+        x_diff(3) = remainder (x_diff(3),M_PI);
+
+        P_ += weights_(i) * x_diff * x_diff.transpose();
     }
 
   //print result
@@ -390,10 +391,6 @@ void UKF::PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out){
   std::cout << x << std::endl;
   std::cout << "Predicted covariance matrix" << std::endl;
   std::cout << P << std::endl;
-
-  //write result
-  x_out = x;
-  P_out = P;
 }
 
 void UKF::PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd& S_out) {
@@ -452,9 +449,9 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd&
       VectorXd z_diff = VectorXd(n_z);
       z_diff = z_meas.col(i) - z_pred;
       //angle normalization
-      while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
-      while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
-
+//      while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
+//      while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
+      z_diff(1) = remainder (z_diff(1),M_PI);
       S += weights_(i) * z_diff * z_diff.transpose();
   }
 
@@ -467,8 +464,8 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd&
   S += R;
 
   //print result
-  std::cout << "z_pred: " << std::endl << z_pred << std::endl;
-  std::cout << "S: " << std::endl << S << std::endl;
+//  std::cout << "z_pred: " << std::endl << z_pred << std::endl;
+//  std::cout << "S: " << std::endl << S << std::endl;
 
   //write result
   Zsig_out = z_meas; // sigma points in measurement space (we need this for the update step)
@@ -477,36 +474,29 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd&
 }
 
 
-void UKF::UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z){
+void UKF::UpdateState(const VectorXd& z, MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z){
 
   // RADAR ONLY
 
-  //create example vector for incoming radar measurement
-  VectorXd z = VectorXd(n_z);
-  z << Zsig.col(0);
-      //rho in m
-      //phi in rad
-      //rho_dot in m/s
-
   //create matrix for cross correlation Tc
   MatrixXd Tc = MatrixXd(n_x_, n_z);
-
+  Tc.fill(0.0);
   //calculate cross correlation matrix
   for (int i = 0; i<2 * n_aug_ + 1; i++)
   {
       VectorXd z_diff = VectorXd(n_z);
       z_diff = Zsig.col(i) - z_pred;
       //angle normalization
-      while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
-      while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
-
+//      while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
+//      while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
+      z_diff(1) = remainder (z_diff(1),M_PI);
       VectorXd x_diff = VectorXd(n_z);
       x_diff = Xsig_pred_.col(i) - x_;
 
       //angle normalization
-      while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
-      while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
-
+//      while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
+//      while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
+      x_diff(3) = remainder (x_diff(3),M_PI);
       Tc += weights_(i) * x_diff * z_diff.transpose();
   }
 
@@ -517,9 +507,9 @@ void UKF::UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z){
   VectorXd z_diff = z - z_pred;
 
   //angle normalization
-  while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
-  while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
-
+//  while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
+//  while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
+  z_diff(1) = remainder (z_diff(1),M_PI);
   //update state mean and covariance matrix
   x_ << x_ + K * z_diff;
   P_ << P_ - K * S * K.transpose();
