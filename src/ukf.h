@@ -29,11 +29,14 @@ public:
   ///* state covariance matrix
   MatrixXd P_;
 
+  // noise matrix for prediction step
+  MatrixXd Q_;
+
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
   ///* time when the state is true, in us
-  long long time_us_;
+//  long long time_us_;
   long long  previous_timestamp_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
@@ -116,7 +119,7 @@ public:
    * @param Xsig_in input matrix containing all generated sigma points
    * @param delta_t elapsed time between the current and previous iteration
    */
-  void SigmaPointPrediction(MatrixXd& Xsig_in, double delta_t);
+  void SigmaPointPrediction(MatrixXd& Xsig_aug, double delta_t);
 
    /**
    * Generates the sigma points
@@ -143,7 +146,7 @@ public:
    * @param z_out (output) mean value of predicted measurement
    * @param S (output) measurement covariance matrix
    */
-  void PredictRadarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd& S_out);
+  void PredictRadarMeasurement(MatrixXd& z_meas, VectorXd& z_pred, MatrixXd& S);
 
   /**
    * Computes the predicted measurement for LIDAR measurement type
@@ -151,7 +154,7 @@ public:
    * @param z_out (output) mean value of predicted measurement
    * @param S (output) measurement covariance matrix
    */
-  void PredictLidarMeasurement(MatrixXd& Zsig_out, VectorXd& z_out, MatrixXd& S_out);
+  void PredictLidarMeasurement(MatrixXd& z_meas, VectorXd& z_pred, MatrixXd& S);
    /**
    * Updates the state (x_) and covariance matrix (P_)
    * @param z The RADAR measurement raw data at k+1
@@ -160,8 +163,7 @@ public:
    * @param S (input) measurement covariance matrix
    * @param n_z (input) measurement state dimension
    */
-  void UpdateState(const VectorXd& z, MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, int n_z);
-
+  void UpdateState(const VectorXd& z, MatrixXd& Tc, VectorXd& z_pred, MatrixXd& S);
 };
 
 #endif /* UKF_H */

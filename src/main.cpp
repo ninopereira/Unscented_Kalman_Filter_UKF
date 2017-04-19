@@ -155,8 +155,7 @@ int main(int argc, char* argv[]) {
   out_file_ << "vy_true" << "\t";
   out_file_ << "NIS" << "\n";
 
-std::cout << "Number of measurements: " << number_of_measurements << std::endl;
-number_of_measurements = 30;
+number_of_measurements = 3; // BUG
   for (size_t k = 0; k < number_of_measurements; ++k) {
     // Call the UKF-based fusion
     ukf.ProcessMeasurement(measurement_pack_list[k]);
