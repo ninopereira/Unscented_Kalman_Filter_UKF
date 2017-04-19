@@ -11,32 +11,66 @@ Tools::~Tools() {}
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
-    VectorXd rmse(4);
-    rmse << 0,0,0,0;
+  /**
+  TODO: Done
+    * Calculate the RMSE here.
+  */
 
-    // check the validity of the following inputs:
-    //  * the estimation vector size should not be zero
-    assert(estimations.size()>0);
+  VectorXd rmse(4);
+  rmse << 0,0,0,0;
 
-    //  * the estimation vector size should equal ground truth vector size
-    assert(estimations.size() == ground_truth.size());
-
-    //accumulate squared residuals
-    VectorXd squared_residuals(estimations.size());
-    for(uint i=0; i < estimations.size(); ++i){
-        // ... your code here
-        VectorXd residual = estimations[i]-ground_truth[i];
-
-        squared_residuals = residual.array()*residual.array();
-        rmse += squared_residuals;
-    }
-
-    //calculate the mean
-    VectorXd mean = rmse/estimations.size();
-
-    //calculate the squared root
-    rmse = mean.array().sqrt();
-
-    //return the result
+  if(estimations.size() != ground_truth.size() || estimations.size() == 0) {
+    std::cout << "Invalid estimation or ground_truth data" << std::endl;
     return rmse;
+  }
+
+  //accumulate squared residuals
+  for(int i=0; i < estimations.size(); ++i){
+    VectorXd residual = estimations[i] - ground_truth[i];
+
+    //coefficient-wise multiplication
+    residual = residual.array()*residual.array();
+    rmse += residual;
+  }
+
+  //calculate the mean
+  rmse = rmse / estimations.size();
+
+  //calculate the squared root
+  rmse = rmse.array().sqrt();
+
+  //return the result
+  return rmse;
 }
+
+//VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
+//                              const vector<VectorXd> &ground_truth) {
+//    VectorXd rmse(4);
+//    rmse << 0,0,0,0;
+
+//    // check the validity of the following inputs:
+//    //  * the estimation vector size should not be zero
+//    assert(estimations.size()>0);
+
+//    //  * the estimation vector size should equal ground truth vector size
+//    assert(estimations.size() == ground_truth.size());
+
+//    //accumulate squared residuals
+//    VectorXd squared_residuals(estimations.size());
+//    for(uint i=0; i < estimations.size(); ++i){
+//        // ... your code here
+//        VectorXd residual = estimations[i]-ground_truth[i];
+
+//        squared_residuals = residual.array()*residual.array();
+//        rmse += squared_residuals;
+//    }
+
+//    //calculate the mean
+//    VectorXd mean = rmse/estimations.size();
+
+//    //calculate the squared root
+//    rmse = mean.array().sqrt();
+
+//    //return the result
+//    return rmse;
+//}

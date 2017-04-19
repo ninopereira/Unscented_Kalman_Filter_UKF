@@ -1,4 +1,4 @@
-# Install script for directory: /home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF
+# Install script for directory: /home/npereira/Udacity_Self_Driving_Car/Term2/Unscented-Kalman-Filter-UKF
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/npereira/Udacity_Self_Driving_Cars/Term2/Unscented-Kalman-Filter-UKF/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/npereira/Udacity_Self_Driving_Car/Term2/Unscented-Kalman-Filter-UKF/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

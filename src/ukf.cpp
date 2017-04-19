@@ -189,10 +189,10 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   // Update the state and covariance matrices.
   if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
     std::cout << "Update Radar" << std::endl;
-//    UpdateRadar(meas_package.raw_measurements_);
+    UpdateRadar(meas_package.raw_measurements_);
   } else {
     std::cout << "Update Lidar" << std::endl;
-//    UpdateLidar(meas_package.raw_measurements_);
+    UpdateLidar(meas_package.raw_measurements_);
   }
     previous_timestamp_ = meas_package.timestamp_ ;
 }
@@ -216,10 +216,12 @@ void UKF::Prediction(double delta_t) {
 //  MatrixXd Xsig_in = MatrixXd(n_x_, 2 * n_x_ + 1);
 //  GenerateSigmaPoints(Xsig_in); // Generate Sigma Points
 
+    // reset matrix
+    Xsig_pred_.fill(0.0);
   //create sigma point matrix
   MatrixXd Xsig_aug = MatrixXd::Zero(n_aug_, 2 * n_aug_ + 1);
+  Xsig_aug.fill(0.0);
   AugmentedSigmaPoints(Xsig_aug);
-
 
   // 2. Predict Sigma Points
   SigmaPointPrediction(Xsig_aug, delta_t);
@@ -414,10 +416,13 @@ void UKF::SigmaPointPrediction(MatrixXd& Xsig_aug, double delta_t) {
   VectorXd x_k = VectorXd::Zero(n_x_);
   VectorXd F = VectorXd::Zero(n_x_);
   VectorXd noise = VectorXd::Zero(n_x_);
+
+  Xsig_pred_.fill(0.0);
+
   //predict sigma points
   for (int i=0; i< (2 * n_aug_ + 1); i++)
   {
-      x_k = Xsig_aug.col(i).head(n_x_);
+      x_k = (Xsig_aug.col(i)).head(n_x_);
 
       double v = x_k(2);
       double yaw = x_k(3);
@@ -451,7 +456,7 @@ void UKF::SigmaPointPrediction(MatrixXd& Xsig_aug, double delta_t) {
       //write predicted sigma points into right column
       Xsig_pred_.col(i) = x_k + F + noise;
   }
-  std::cout <<  Xsig_pred_ << std::endl;
+
 }
 
 
@@ -462,7 +467,7 @@ void UKF::PredictMeanAndCovariance(){
     x_.fill(0.0);
     P_.fill(0.0);
 
-    for (int i =1; i< 2*n_aug_+1; i++)
+    for (int i =0; i< 2*n_aug_+1; i++)
     {
       //predict state mean
       x_ = x_ + weights_(i) * Xsig_pred_.col(i);
@@ -474,9 +479,7 @@ void UKF::PredictMeanAndCovariance(){
         // state difference
         VectorXd x_diff = Xsig_pred_.col(i) - x_;
         //angle normalization
-//        x_diff(3) = remainder (x_diff(3),M_PI);
-        while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
-        while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
+        x_diff(3) = remainder (x_diff(3),M_PI);
         P_ = P_ + weights_(i) * x_diff * x_diff.transpose();
     }
 }
