@@ -32,6 +32,12 @@ public:
   // noise matrix for prediction step
   MatrixXd Q_;
 
+  // Radar R matrix
+  MatrixXd R_radar_;
+
+  // Laser R matrix
+  MatrixXd R_laser_;
+
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
@@ -67,6 +73,9 @@ public:
 
   ///* Augmented state dimension
   int n_aug_;
+
+  ///* Number of sigma points
+  int n_sig_;
 
   ///* Sigma point spreading parameter
   double lambda_;
